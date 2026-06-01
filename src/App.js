@@ -1,64 +1,65 @@
+const API = "https://bit-cora-bvx8.vercel.app/";
 import * as XLSX from "xlsx";
 import { useState, useEffect } from "react";
 
 /* ─── STORAGE HELPERS ─── */
+import { db } from "./firebase";
+import {
+  doc, getDoc, setDoc, collection, getDocs
+} from "firebase/firestore";
+
+/* ─── STORAGE HELPERS ─── */
 async function loadData() {
   try {
-    const r = localStorage.getItem("vulkania_trabajadores");
-    return r ? JSON.parse(r) : [];
-  } catch {
-    return [];
-  }
+    const snap = await getDocs(collection(db, "trabajadores"));
+    return snap.docs.map(d => d.data());
+  } catch { return []; }
 }
 
 async function saveData(data) {
   try {
-    localStorage.setItem("vulkania_trabajadores", JSON.stringify(data));
+    for (const t of data) {
+      await setDoc(doc(db, "trabajadores", t.nombre), t);
+    }
   } catch {}
 }
 
 async function loadAgenda() {
   try {
-    const r = localStorage.getItem("vulkania_agenda");
-    return r ? JSON.parse(r) : [];
-  } catch {
-    return [];
-  }
+    const snap = await getDocs(collection(db, "agenda"));
+    return snap.docs.map(d => d.data());
+  } catch { return []; }
 }
 
 async function saveAgenda(data) {
   try {
-    localStorage.setItem("vulkania_agenda", JSON.stringify(data));
+    await setDoc(doc(db, "agenda", "lista"), { items: data });
   } catch {}
 }
 
 async function loadEquipos() {
   try {
-    const r = localStorage.getItem("vulkania_equipos");
-    return r ? JSON.parse(r) : [];
-  } catch {
-    return [];
-  }
+    const snap = await getDoc(doc(db, "equipos", "lista"));
+    return snap.exists() ? snap.data().items : [];
+  } catch { return []; }
 }
 
 async function saveEquipos(data) {
   try {
-    localStorage.setItem("vulkania_equipos", JSON.stringify(data));
+    await setDoc(doc(db, "equipos", "lista"), { items: data });
   } catch {}
 }
 
 async function loadAvisos() {
   try {
-    const r = localStorage.getItem("vulkania_avisos");
-    return r ? JSON.parse(r) : [];
-  } catch {
-    return [];
-  }
+    const snap = await getDoc(doc(db, "avisos", "lista"));
+    return snap.exists() ? snap.data().items : [];
+  } catch { return []; }
 }
 
 async function saveAvisos(data) {
   try {
-    localStorage.setItem("vulkania_avisos", JSON.stringify(data));
+    await setDoc(doc(db, "avisos", "lista"), { items: data });
   } catch {}
 }
 
