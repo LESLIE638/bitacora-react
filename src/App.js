@@ -21,7 +21,9 @@ async function saveData(data) {
     for (const t of data) {
       await setDoc(doc(db, "trabajadores", t.nombre), t);
     }
-  } catch {}
+  } catch (error) {
+    console.error("Error guardando:", error);
+  }
 }
 
 async function loadAgenda() {
